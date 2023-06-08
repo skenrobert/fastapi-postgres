@@ -27,7 +27,7 @@ users = []
 def ruta1():
     return{"msj":"hello work"}
 
-@app.get('/user')
+@app.get('/users')
 def showAll():
     return users
 
@@ -37,18 +37,39 @@ def create_user(user:User):
     users.append(user)
     return {"response":"201"}
 
-@app.get('/user1/{user_id}')#query parameter
+@app.get('/users1/{user_id}')#query parameter
 def showOne(user_id:int):
     for user in users:
         if user["id"] == user_id:
             return {"user": user}
     return{"response": "user no found"}
 
-@app.post('/user2')
+@app.post('/users2')# for post parameter
 def showOneUserId(userid:UserShow):
     for user in users:
         if user["id"] == userid.id:
             return {"user": user}
+    return{"response": "user no found"}
+
+@app.put('/users/{user_id}')
+def update(user_id:int, updateUser:User):
+    for i, user in enumerate(users):
+        if user["id"] == user_id:
+            users[i]["name"] = updateUser.dict()["name"]
+            users[i]["lastName"] = updateUser.dict()["lastName"]
+            users[i]["address"] = updateUser.dict()["address"]
+            users[i]["phone"] = updateUser.dict()["phone"]
+            return {"user": user}
+    return{"response": "user no found"}
+
+
+
+@app.delete('/users/{user_id}')#query parameter
+def delete(user_id:int):
+    for i, user in enumerate(users): #i position dict
+        if user["id"] == user_id:
+            users.pop(i)
+            return {"data": user}
     return{"response": "user no found"}
 
 if __name__=="__main__":
