@@ -15,9 +15,15 @@ class User(BaseModel): #Schema
 class UserShow(BaseModel): # only used for other form, used for post
     id:int
 
-
-# class Sale(BaseModel):
-#     id = int
-#     user_id = int
-#     sale = int
-#     productos = int
+class filterUser(BaseModel):
+    username:str
+    name:str 
+    email:str 
+    class Config():
+        orm_mode = True 
+        
+class Sale(BaseModel):
+    id = int
+    user_id = int
+    sale = int
+    productos = int

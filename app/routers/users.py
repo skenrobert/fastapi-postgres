@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-from app.schemas import User, UserShow
+from app.schemas import User, UserShow, filterUser
+from typing import List
 
 ###################call conect database in main ####################
 from db.database import Base, engine
@@ -16,8 +17,10 @@ users = []
 
 
 @router.get('/') # used @router because used APIRouter
+# @router.get('/',response_model=List[filterUser]) # used @router because used APIRouter
 def showAll(db:Session = Depends(get_db)):
-    return users
+    data = db.query(Userdb).all()
+    return {"response":data}
 
 @router.post('/')
 def create_user(user:User, db:Session = Depends(get_db)):
@@ -39,13 +42,18 @@ def create_user(user:User, db:Session = Depends(get_db)):
     db.refresh(new_user)
     
     return {"response":new_user}
+# ***********************************************************
 
 @router.get('1/{user_id}')#query parameter
+# @router.get('1/{user_id}', response_model=filterUser)
 def showOne(user_id:int, db:Session = Depends(get_db)):
-    for user in users:
-        if user["id"] == user_id:
-            return {"user": user}
-    return{"response": "user no found"}
+
+    user = db.query(Userdb).filter(Userdb.id == user_id).first()
+    if not user:
+        return {"response": "user no found"} 
+    return{"response": user}
+
+# ***********************************************************
 
 @router.post('2')# for post parameter
 def showOneUserId(userid:UserShow, db:Session = Depends(get_db)):
@@ -69,8 +77,12 @@ def update(user_id:int, updateUser:User, db:Session = Depends(get_db)):
 
 @router.delete('/{user_id}')#query parameter
 def delete(user_id:int, db:Session = Depends(get_db)):
-    for i, user in enumerate(users): #i position dict
-        if user["id"] == user_id:
-            users.pop(i)
-            return {"data": user}
-    return{"response": "user no found"}
+    
+    user = db.query(Userdb).filter(Userdb.id == user_id)
+    if not user.first():
+        return {"response": "user no found"} 
+    
+    user.delete(synchronize_session=False)
+    db.commit()
+    
+    return{"response": "user delete"}
