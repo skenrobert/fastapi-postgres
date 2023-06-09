@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.schemas import User, UserShow, filterUser
+from app.schemas import User, UserShow, filterUser, UpdateUser
 from typing import List
 
 ###################call conect database in main ####################
@@ -55,25 +55,30 @@ def showOne(user_id:int, db:Session = Depends(get_db)):
 
 # ***********************************************************
 
-@router.post('2')# for post parameter
-def showOneUserId(userid:UserShow, db:Session = Depends(get_db)):
-    for user in users:
-        if user["id"] == userid.id:
-            return {"user": user}
-    return{"response": "user no found"}
+# @router.post('2')# for post parameter
+# def showOneUserId(userid:UserShow, db:Session = Depends(get_db)):
+#     for user in users:
+#         if user["id"] == userid.id:
+#             return {"user": user}
+#     return{"response": "user no found"}
 
-@router.put('/{user_id}')
-def update(user_id:int, updateUser:User, db:Session = Depends(get_db)):
-    for i, user in enumerate(users):
-        if user["id"] == user_id:
-            users[i]["name"] = updateUser.dict()["name"]
-            users[i]["lastName"] = updateUser.dict()["lastName"]
-            users[i]["address"] = updateUser.dict()["address"]
-            users[i]["phone"] = updateUser.dict()["phone"]
-            return {"user": user}
-    return{"response": "user no found"}
+@router.patch('/{user_id}')
+def update(user_id:int, updateUser:UpdateUser, db:Session = Depends(get_db)):
+    
+    user = db.query(Userdb).filter(Userdb.id == user_id)
+    if not user.first():
+        return {"response": "user no found"} 
+    user.update(updateUser.dict(exclude_unset=True))
+    db.commit()
+    return{"response": "update success"}
 
-
+    # for i, user in enumerate(users):
+    #     if user["id"] == user_id:
+    #         users[i]["name"] = updateUser.dict()["name"]
+    #         users[i]["lastName"] = updateUser.dict()["lastName"]
+    #         users[i]["address"] = updateUser.dict()["address"]
+    #         users[i]["phone"] = updateUser.dict()["phone"]
+    #         return {"user": user}
 
 @router.delete('/{user_id}')#query parameter
 def delete(user_id:int, db:Session = Depends(get_db)):

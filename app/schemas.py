@@ -22,6 +22,15 @@ class filterUser(BaseModel):
     class Config():
         orm_mode = True 
         
+class UpdateUser(BaseModel): #Schema 
+    username:str = None 
+    password:str = None 
+    name:str = None 
+    lastname:str = None 
+    address:str = None 
+    phone:int = None 
+    email:str = None 
+        
 class Sale(BaseModel):
     id = int
     user_id = int
