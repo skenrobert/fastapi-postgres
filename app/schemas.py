@@ -3,12 +3,21 @@ from typing import Optional # optinal value in create model
 from datetime import datetime # date in model
 
 class User(BaseModel): #Schema
-    id:int
-    name:str
-    lastName:str
+    username:str
+    password:str 
+    name:str 
+    lastname:str 
     address:Optional[str]
-    phone:str
-    date_create:datetime =datetime.now()
+    phone:int 
+    email:str 
+    creation:datetime =datetime.now()
 
 class UserShow(BaseModel): # only used for other form, used for post
     id:int
+
+
+# class Sale(BaseModel):
+#     id = int
+#     user_id = int
+#     sale = int
+#     productos = int
